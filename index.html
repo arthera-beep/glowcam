@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LuminaSkin AI - Analisis Kulit Cerdas & Rekomendasi Skincare</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .font-serif {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+    /* Subtle scan line animation */
+    @keyframes scanMove {
+      0% { top: 0%; opacity: 0.8; }
+      50% { opacity: 1; }
+      100% { top: 96%; opacity: 0.8; }
+    }
+    .scanner-line {
+      animation: scanMove 2.4s ease-in-out infinite alternate;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
+    .pulse-glow {
+      animation: pulseGlow 2s infinite ease-in-out;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.03);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-[#FAF8F5] text-slate-800 antialiased min-h-screen flex flex-col selection:bg-rose-100 selection:text-rose-900">
+
+  <!-- Header & Navigation -->
+  <header class="sticky top-0 z-40 bg-[#FAF8F5]/90 backdrop-blur-md border-b border-stone-200/80 transition-all">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 to-amber-400 flex items-center justify-center text-white shadow-md shadow-rose-500/20">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        </div>
+        <div>
+          <span class="font-serif font-bold text-xl tracking-tight text-stone-900">LuminaSkin<span class="text-rose-500">.ai</span></span>
+          <span class="hidden sm:inline-block ml-2 text-[11px] font-medium px-2 py-0.5 bg-rose-50 text-rose-700 border border-rose-200 rounded-full">Dermatology AI</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+        <button id="btnScrollScan" class="px-3.5 py-1.5 rounded-full font-medium text-stone-700 hover:text-stone-900 hover:bg-stone-100 transition">
+          Mulai Scan
+        </button>
+        <button id="btnScrollCatalog" class="px-3.5 py-1.5 rounded-full font-medium text-stone-700 hover:text-stone-900 hover:bg-stone-100 transition">
+          Katalog Skincare
+        </button>
+        <span class="w-px h-4 bg-stone-300 hidden sm:block"></span>
+        <button onclick="resetAll()" class="px-3 py-1.5 rounded-full text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition">
+          Reset Analisis
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative pt-8 pb-10 sm:pt-14 sm:pb-16 px-4 sm:px-6 bg-gradient-to-b from-[#FAF8F5] via-rose-50/30 to-[#FAF8F5]">
+    <div class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-stone-100/80 border border-stone-200 text-stone-600 text-xs font-medium tracking-wide">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+        Sistem Deteksi Multimoda Kulit & Pencocokan Bahan Aktif
+      </div>
+      <h1 class="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-stone-900 leading-tight">
+        Ketahui Kebutuhan Kulitmu,<br>
+        <span class="italic font-normal text-rose-600">Rekomendasi Skincare yang Tepat Sasaran.</span>
+      </h1>
+      <p class="text-sm sm:text-base text-stone-600 max-w-2xl mx-auto leading-relaxed">
+        Pindai wajah dengan kamera atau unggah foto. AI kami menganalisis jerawat, pori-pori, kemerahan, serta hiperpigmentasi untuk mencocokkan produk terbaik sesuai bahan aktif dan budgetmu.
+      </p>
+
+      <!-- Quick Trust Badges -->
+      <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-8 pt-2 text-xs text-stone-500">
+        <div class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          Katalog Brand Populer & Terdaftar BPOM
+        </div>
+        <div class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          Analisis Bahan Aktif & Skin Barrier
+        </div>
+        <div class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          Privasi Terjaga (Lokal di Browser)
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Analysis Section -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 pb-20 flex-1 space-y-10" id="scanSection">
+    
+    <!-- Input & Capture Stage -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Left: Capture Box & Preview -->
+      <div class="lg:col-span-7 space-y-4">
+        <div class="bg-white rounded-3xl border border-stone-200/90 shadow-sm p-4 sm:p-6 relative overflow-hidden">
+          
+          <div class="flex items-center justify-between pb-4 border-b border-stone-100">
+            <div>
+              <h2 class="font-bold text-stone-900 text-base">Pemindaian Wajah (Skin Scan)</h2>
+              <p class="text-xs text-stone-500">Pilih foto wajah tanpa makeup/filter untuk hasil akurat</p>
+            </div>
+            <div class="flex gap-2 text-xs">
+              <button id="tabUpload" onclick="switchInputMode('upload')" class="px-3 py-1 rounded-full font-medium bg-stone-900 text-white transition">Unggah Foto</button>
+              <button id="tabCamera" onclick="switchInputMode('camera')" class="px-3 py-1 rounded-full font-medium bg-stone-100 text-stone-700 hover:bg-stone-200 transition">Kamera Langsung</button>
+            </div>
+          </div>
+
+          <!-- Viewport / Canvas Container -->
+          <div class="relative mt-4 aspect-[4/3] sm:aspect-[16/11] rounded-2xl bg-stone-950 overflow-hidden flex items-center justify-center border border-stone-800">
+            
+            <!-- Live Video -->
+            <video id="webcamVideo" autoplay playsinline muted class="hidden absolute inset-0 w-full h-full object-cover transform -scale-x-100"></video>
+            
+            <!-- Target Canvas (Rendered Image + Overlays) -->
+            <canvas id="faceCanvas" class="max-w-full max-h-full object-contain"></canvas>
+
+            <!-- Guide Overlay (Oval Silhouette) -->
+            <div id="guideOverlay" class="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <div class="w-48 h-64 sm:w-56 sm:h-72 border-2 border-dashed border-white/40 rounded-[50%] flex flex-col items-center justify-between py-6">
+                <span class="text-[11px] font-medium text-white/80 bg-black/50 px-2.5 py-0.5 rounded-full backdrop-blur-sm">Posisikan wajah di dalam oval</span>
+                <span class="text-[10px] text-white/60 bg-black/40 px-2 py-0.5 rounded-full">Pencahayaan terang & merata</span>
+              </div>
+            </div>
+
+            <!-- Scanning Animation Bar -->
+            <div id="scanningBar" class="hidden pointer-events-none absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-rose-400 to-transparent shadow-[0_0_15px_#f43f5e] scanner-line"></div>
+
+            <!-- Heatmap / Zone Toggle Overlay -->
+            <div id="canvasOverlayHotspots" class="absolute inset-0 pointer-events-none"></div>
+
+            <!-- Placeholder State when empty -->
+            <div id="emptyPlaceholder" class="text-center p-6 space-y-3 z-10">
+              <div class="w-16 h-16 mx-auto rounded-full bg-stone-900/80 border border-stone-700 flex items-center justify-center text-stone-300">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <div class="space-y-1">
+                <p class="text-sm font-medium text-stone-200">Belum ada foto yang dipilih</p>
+                <p class="text-xs text-stone-400">Gunakan kamera, pilih file dari galeri, atau pilih demo wajah di bawah</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Controls under canvas -->
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+              <button id="btnTriggerUpload" onclick="document.getElementById('fileInput').click()" class="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold rounded-xl flex items-center gap-2 shadow-sm transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                Pilih File Foto
+              </button>
+              
+              <button id="btnCaptureCamera" onclick="takeSnapshot()" class="hidden px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl flex items-center gap-2 shadow-sm transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                Ambil Gambar
+              </button>
+
+              <button id="btnToggleOverlay" onclick="toggleAnalysisOverlay()" class="hidden px-3 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-medium rounded-xl items-center gap-1.5 transition">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                <span id="overlayToggleText">Sembunyikan Titik Masalah</span>
+              </button>
+            </div>
+
+            <!-- Run Analysis Button -->
+            <button id="btnRunAnalysis" onclick="startAnalysis()" disabled class="px-5 py-2.5 bg-rose-500 hover:bg-rose-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold rounded-xl shadow-md shadow-rose-500/20 flex items-center gap-2 transition">
+              <span id="runBtnSpinner" class="hidden w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              <span id="runBtnText">Mulai Analisis AI</span>
+            </button>
+          </div>
+
+          <!-- Presets / Quick Test Profiles -->
+          <div class="mt-6 pt-5 border-t border-stone-100">
+            <span class="text-xs font-semibold text-stone-600 block mb-2.5">Atau coba langsung dengan contoh profil kulit:</span>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button onclick="loadSampleProfile('acne_oily')" class="text-left p-2.5 rounded-xl border border-stone-200 hover:border-rose-300 hover:bg-rose-50/40 transition group">
+                <div class="w-full h-16 rounded-lg bg-stone-100 mb-2 overflow-hidden relative">
+                  <div class="absolute inset-0 bg-gradient-to-tr from-amber-200/60 to-rose-300/60 flex items-center justify-center font-bold text-xs text-stone-700">Profil 1</div>
+                  <span class="absolute top-1 right-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500 text-white">Acne</span>
+                </div>
+                <div class="text-[11px] font-bold text-stone-900 group-hover:text-rose-600 truncate">Jerawat & Minyak</div>
+                <div class="text-[10px] text-stone-500">Pori tersumbat, sebum</div>
+              </button>
+
+              <button onclick="loadSampleProfile('dull_hyperpigmentation')" class="text-left p-2.5 rounded-xl border border-stone-200 hover:border-rose-300 hover:bg-rose-50/40 transition group">
+                <div class="w-full h-16 rounded-lg bg-stone-100 mb-2 overflow-hidden relative">
+                  <div class="absolute inset-0 bg-gradient-to-tr from-amber-100/70 to-orange-200/60 flex items-center justify-center font-bold text-xs text-stone-700">Profil 2</div>
+                  <span class="absolute top-1 right-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-orange-500 text-white">Flek</span>
+                </div>
+                <div class="text-[11px] font-bold text-stone-900 group-hover:text-rose-600 truncate">Kusam & Flek</div>
+                <div class="text-[10px] text-stone-500">Noda hitam, warna belang</div>
+              </button>
+
+              <button onclick="loadSampleProfile('dry_barrier_damaged')" class="text-left p-2.5 rounded-xl border border-stone-200 hover:border-rose-300 hover:bg-rose-50/40 transition group">
+                <div class="w-full h-16 rounded-lg bg-stone-100 mb-2 overflow-hidden relative">
+                  <div class="absolute inset-0 bg-gradient-to-tr from-rose-200/70 to-red-200/50 flex items-center justify-center font-bold text-xs text-stone-700">Profil 3</div>
+                  <span class="absolute top-1 right-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-500 text-white">Sensitif</span>
+                </div>
+                <div class="text-[11px] font-bold text-stone-900 group-hover:text-rose-600 truncate">Kering & Merah</div>
+                <div class="text-[10px] text-stone-500">Barrier rusak, iritasi</div>
+              </button>
+
+              <button onclick="loadSampleProfile('aging_normal')" class="text-left p-2.5 rounded-xl border border-stone-200 hover:border-rose-300 hover:bg-rose-50/40 transition group">
+                <div class="w-full h-16 rounded-lg bg-stone-100 mb-2 overflow-hidden relative">
+                  <div class="absolute inset-0 bg-gradient-to-tr from-stone-200 to-indigo-100 flex items-center justify-center font-bold text-xs text-stone-700">Profil 4</div>
+                  <span class="absolute top-1 right-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-500 text-white">Aging</span>
+                </div>
+                <div class="text-[11px] font-bold text-stone-900 group-hover:text-rose-600 truncate">Garis Halus</div>
+                <div class="text-[10px] text-stone-500">Elastisitas & hidrasi</div>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right: User Skin Quiz & Preferences -->
+      <div class="lg:col-span-5 space-y-4">
+        <div class="bg-white rounded-3xl border border-stone-200/90 shadow-sm p-5 sm:p-6 space-y-5">
+          <div class="flex items-center gap-2 pb-3 border-b border-stone-100">
+            <div class="w-7 h-7 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-xs">
+              1
+            </div>
+            <div>
+              <h3 class="font-bold text-stone-900 text-sm">Preferensi & Anggaran</h3>
+              <p class="text-[11px] text-stone-500">Sesuaikan rekomendasi produk dengan kebutuhanmu</p>
+            </div>
+          </div>
+
+          <!-- Budget Filter -->
+          <div class="space-y-2">
+            <label class="text-xs font-semibold text-stone-700 flex items-center justify-between">
+              Rentang Anggaran per Produk
+              <span id="budgetLabel" class="text-rose-600 font-bold">Semua Anggaran</span>
+            </label>
+            <div class="grid grid-cols-3 gap-2">
+              <button type="button" onclick="setBudgetTier('budget')" id="btnTierBudget" class="py-2 px-3 rounded-xl border border-stone-200 text-center text-xs font-medium hover:border-rose-300 transition">
+                <div class="font-bold text-stone-800">&lt; Rp 100rb</div>
+                <div class="text-[10px] text-stone-500">Hemat Pelajar</div>
+              </button>
+              <button type="button" onclick="setBudgetTier('mid')" id="btnTierMid" class="py-2 px-3 rounded-xl border border-stone-200 text-center text-xs font-medium hover:border-rose-300 transition">
+                <div class="font-bold text-stone-800">100rb - 250rb</div>
+                <div class="text-[10px] text-stone-500">Menengah Populer</div>
+              </button>
+              <button type="button" onclick="setBudgetTier('all')" id="btnTierAll" class="py-2 px-3 rounded-xl border-2 border-stone-900 bg-stone-900 text-white text-center text-xs font-medium transition">
+                <div class="font-bold">Semua</div>
+                <div class="text-[10px] text-stone-300">Campuran Rekomendasi</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Target Focus Preference -->
+          <div class="space-y-2">
+            <label class="text-xs font-semibold text-stone-700">Fokus Perawatan Utama</label>
+            <select id="selectPriority" onchange="applyFiltersAndRender()" class="w-full text-xs font-medium border border-stone-200 rounded-xl px-3.5 py-2.5 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500">
+              <option value="auto">Deteksi Otomatis AI (Rekomendasi Terbaik)</option>
+              <option value="acne">Atasi Jerawat & Pori Tersumbat</option>
+              <option value="barrier">Perbaiki Skin Barrier & Redakan Kemerahan</option>
+              <option value="brightening">Mencerahkan & Samarkan Flek Hitam</option>
+              <option value="antiaging">Anti-Aging & Kelembapan Maksimal</option>
+            </select>
+          </div>
+
+          <!-- Checkboxes Special Needs -->
+          <div class="space-y-2 pt-2">
+            <label class="text-xs font-semibold text-stone-700">Kriteria Khusus</label>
+            <div class="space-y-2 text-xs text-stone-600">
+              <label class="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-stone-50">
+                <input type="checkbox" id="checkPregnancySafe" onchange="applyFiltersAndRender()" class="rounded border-stone-300 text-rose-600 focus:ring-rose-500">
+                <span>Aman untuk Ibu Hamil & Menyusui (*Bumil/Busui Friendly*)</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-stone-50">
+                <input type="checkbox" id="checkAlcoholFree" onchange="applyFiltersAndRender()" class="rounded border-stone-300 text-rose-600 focus:ring-rose-500" checked>
+                <span>Bebas Alkohol Kering & Pewangi Berlebih</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Diagnostic Status Card -->
+          <div id="aiStatusBox" class="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/80 text-amber-900 text-xs flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-amber-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div class="leading-relaxed">
+              <span class="font-bold">Status:</span> Silakan upload foto atau klik salah satu <strong>Profil Contoh</strong> di sebelah kiri untuk melihat proses deteksi & rekomendasi otomatis.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Section (Revealed after analysis) -->
+    <div id="resultsSection" class="hidden space-y-8 pt-4">
+      
+      <!-- Section Title -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-200">
+        <div>
+          <span class="text-xs font-bold text-rose-600 tracking-wider uppercase">Laporan Diagnostik</span>
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-stone-900">Hasil Analisis Kondisi Kulit</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="px-3.5 py-1.5 rounded-xl border border-stone-200 hover:bg-stone-100 text-xs font-medium text-stone-700 flex items-center gap-1.5 transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            Cetak / Simpan PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Overview Cards (Overall Score & Skin Type) -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+        
+        <!-- Overall Score Card -->
+        <div class="md:col-span-4 bg-white rounded-3xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between relative overflow-hidden">
+          <div class="absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-rose-50 pointer-events-none"></div>
+          <div>
+            <div class="text-xs font-semibold text-stone-500 uppercase tracking-wider">Skor Kesehatan Kulit</div>
+            <div class="mt-4 flex items-baseline gap-2">
+              <span id="scoreNumber" class="text-5xl font-black text-stone-900 tracking-tight">78</span>
+              <span class="text-stone-400 font-semibold text-sm">/ 100</span>
+            </div>
+            <div id="scoreStatusBadge" class="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              Perlu Perhatian Khusus
+            </div>
+          </div>
+          <div class="mt-6 pt-4 border-t border-stone-100 text-xs text-stone-600 leading-relaxed" id="scoreDescription">
+            Kulit menunjukkan indikasi peradangan ringan dan pori-pori tersumbat di area T-zone, sementara kelembapan pipi cukup stabil.
+          </div>
+        </div>
+
+        <!-- Detected Skin Type & Zones -->
+        <div class="md:col-span-8 bg-white rounded-3xl p-6 border border-stone-200 shadow-sm space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <span class="text-xs font-semibold text-stone-500 uppercase tracking-wider">Tipe Kulit Terdeteksi</span>
+              <div id="detectedSkinType" class="text-2xl font-bold text-stone-900 mt-1">Kombinasi Cenderung Berjerawat</div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-semibold text-stone-500 uppercase tracking-wider">T-Zone vs U-Zone</span>
+              <div id="tZoneSummary" class="text-xs font-bold text-rose-600 mt-1">T-Zone Oily • U-Zone Normal/Dry</div>
+            </div>
+          </div>
+
+          <!-- Parameter Progress Bars -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+            
+            <!-- Acne -->
+            <div class="p-3 rounded-2xl bg-stone-50/80 border border-stone-100 space-y-1.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-semibold text-stone-700">Jerawat & Komedo</span>
+                <span id="metricAcneLevel" class="font-bold text-rose-600">Sedang (62%)</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-stone-200 overflow-hidden">
+                <div id="barAcne" class="h-full bg-rose-500 rounded-full transition-all duration-700" style="width: 62%"></div>
+              </div>
+              <span id="metricAcneNote" class="text-[10px] text-stone-500 block truncate">Komedo terbuka di hidung & papula dagu</span>
+            </div>
+
+            <!-- Redness & Barrier -->
+            <div class="p-3 rounded-2xl bg-stone-50/80 border border-stone-100 space-y-1.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-semibold text-stone-700">Kemerahan & Barrier</span>
+                <span id="metricRednessLevel" class="font-bold text-amber-600">Sensitif Ringan (45%)</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-stone-200 overflow-hidden">
+                <div id="barRedness" class="h-full bg-amber-500 rounded-full transition-all duration-700" style="width: 45%"></div>
+              </div>
+              <span id="metricRednessNote" class="text-[10px] text-stone-500 block truncate">Eritema ringan di cuping hidung & pipi</span>
+            </div>
+
+            <!-- Pores & Sebum -->
+            <div class="p-3 rounded-2xl bg-stone-50/80 border border-stone-100 space-y-1.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-semibold text-stone-700">Pori-Pori & Minyak</span>
+                <span id="metricPoreLevel" class="font-bold text-amber-600">Tinggi (70%)</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-stone-200 overflow-hidden">
+                <div id="barPore" class="h-full bg-amber-500 rounded-full transition-all duration-700" style="width: 70%"></div>
+              </div>
+              <span id="metricPoreNote" class="text-[10px] text-stone-500 block truncate">Kelenjar minyak aktif pada area dahi & hidung</span>
+            </div>
+
+            <!-- Hyperpigmentation / Dark spots -->
+            <div class="p-3 rounded-2xl bg-stone-50/80 border border-stone-100 space-y-1.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-semibold text-stone-700">Flek / Noda Hitam (PIH)</span>
+                <span id="metricDarkSpotsLevel" class="font-bold text-emerald-600">Rendah (28%)</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-stone-200 overflow-hidden">
+                <div id="barDarkSpots" class="h-full bg-emerald-500 rounded-full transition-all duration-700" style="width: 28%"></div>
+              </div>
+              <span id="metricDarkSpotsNote" class="text-[10px] text-stone-500 block truncate">Bekas jerawat kemerahan ringan (PIE)</span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Ingredient Strategy Card (What to use vs What to avoid) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-emerald-50/70 border border-emerald-200/80 rounded-3xl p-5 space-y-3">
+          <div class="flex items-center gap-2 text-emerald-800 font-bold text-xs">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            BAHAN AKTIF YANG DIREKOMENDASIKAN (TARGET KERJA)
+          </div>
+          <div id="recommendedIngredientsList" class="flex flex-wrap gap-2 text-xs">
+            <!-- Badges injected by JS -->
+          </div>
+          <p id="recommendedIngredientDesc" class="text-[11px] text-emerald-900/80 leading-relaxed">
+            Bahan-bahan di atas terbukti secara klinis menenangkan inflamasi pori dan memperkuat lipid barrier kulit tanpa membuat kulit mengelupas parah.
+          </p>
+        </div>
+
+        <div class="bg-rose-50/70 border border-rose-200/80 rounded-3xl p-5 space-y-3">
+          <div class="flex items-center gap-2 text-rose-800 font-bold text-xs">
+            <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            BAHAN / KEBIASAAN YANG SEBAIKNYA DIHINDARI
+          </div>
+          <div id="avoidIngredientsList" class="flex flex-wrap gap-2 text-xs">
+            <!-- Badges injected by JS -->
+          </div>
+          <p id="avoidIngredientDesc" class="text-[11px] text-rose-900/80 leading-relaxed">
+            Hindari eksfoliasi fisik (scrub butiran kasar) serta produk berkadar alkohol tinggi yang dapat memicu kompensasi minyak berlebih.
+          </p>
+        </div>
+      </div>
+
+      <!-- Personalized Skincare Routine (AM / PM & Product Recommendations) -->
+      <div id="catalogSection" class="bg-white rounded-3xl border border-stone-200 shadow-sm p-6 sm:p-8 space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-100">
+          <div>
+            <span class="text-xs font-bold text-rose-600 uppercase tracking-wider">Kurasi Berbasis Kebutuhan</span>
+            <h3 class="font-serif text-2xl font-bold text-stone-900">Rekomendasi Rutinitas Skincare</h3>
+            <p class="text-xs text-stone-500 mt-0.5">Produk pilihan dari brand terpercaya yang cocok dengan kondisi kulitmu</p>
+          </div>
+
+          <!-- Routine Time Filter (AM / PM / All) -->
+          <div class="flex items-center gap-1.5 p-1 bg-stone-100 rounded-2xl text-xs font-semibold">
+            <button onclick="setRoutineFilter('all')" id="tabAllRoutine" class="px-3.5 py-1.5 rounded-xl bg-white text-stone-900 shadow-sm transition">Semua</button>
+            <button onclick="setRoutineFilter('am')" id="tabAmRoutine" class="px-3.5 py-1.5 rounded-xl text-stone-600 hover:text-stone-900 transition flex items-center gap-1">
+              ☀️ Pagi (AM)
+            </button>
+            <button onclick="setRoutineFilter('pm')" id="tabPmRoutine" class="px-3.5 py-1.5 rounded-xl text-stone-600 hover:text-stone-900 transition flex items-center gap-1">
+              🌙 Malam (PM)
+            </button>
+          </div>
+        </div>
+
+        <!-- Step By Step Guidance Box -->
+        <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-stone-600">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-sm shrink-0">✨</span>
+            <div>
+              <span class="font-bold text-stone-800">Aturan Aplikasi:</span> Aplikasikan produk dari tekstur paling cair (toner/essence) ke yang paling kental (moisturizer). Jangan lewatkan tabir surya di pagi hari!
+            </div>
+          </div>
+          <span id="activeCountBadge" class="px-2.5 py-1 rounded-full bg-white border border-stone-200 text-stone-700 font-semibold shrink-0">
+            6 Produk Cocok
+          </span>
+        </div>
+
+        <!-- Products Grid Container -->
+        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <!-- Injected via JavaScript -->
+        </div>
+
+      </div>
+
+      <!-- FAQ & Dermatologist Disclaimer -->
+      <div class="rounded-2xl p-5 bg-stone-100/80 border border-stone-200 text-stone-500 text-xs space-y-2">
+        <p class="font-semibold text-stone-700 flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Catatan & Disclaimer Medis
+        </p>
+        <p class="leading-relaxed">
+          Aplikasi LuminaSkin AI dirancang sebagai panduan kecantikan awal (*cosmetic decision support*) berdasarkan analisis computer vision dan data kandungan bahan aktif. Aplikasi ini tidak menggantikan diagnosis medis resmi dari dokter spesialis dermatologi. Bila kamu mengalami jerawat kistik meradang parah (*cystic acne*), eksim aktif, atau infeksi kulit, konsultasikan langsung ke dokter Sp.DVE.
+        </p>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Product Modal Detail (Popup) -->
+  <div id="productDetailModal" class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl border border-stone-200 relative animate-in fade-in zoom-in-95 duration-200">
+      <button onclick="closeProductModal()" class="absolute top-5 right-5 text-stone-400 hover:text-stone-700 p-1 rounded-full hover:bg-stone-100 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-auto border-t border-stone-200 bg-white py-6 px-4 text-center text-xs text-stone-500">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <span class="font-serif font-bold text-stone-900">LuminaSkin.ai</span>
+        <span>— Pendeteksi Kulit Cerdas & Kurasi Skincare Indonesia</span>
+      </div>
+      <div>
+        Dibuat untuk analisis kulit mandiri & rekomendasi berbasis data sains.
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    // --- SKINDATA & PRODUCT CATALOG (REAL INDONESIAN & POPULAR PRODUCTS) ---
+    const PRODUCT_CATALOG = [
+      // Cleansers
+      {
+        id: 'c1',
+        category: 'cleanser',
+        name: 'Low pH Good Morning Gel Cleanser',
+        brand: 'COSRX',
+        price: 99000,
+        tier: 'budget',
+        size: '150ml',
+        rating: 4.8,
+        time: ['am', 'pm'],
+        targets: ['acne', 'oily'],
+        pregnancySafe: true,
+        alcoholFree: true,
+        keyIngredients: ['Tea Tree Oil', 'Betaine Salicylate (BHA)', 'Allantoin'],
+        whyRecommended: 'Membersihkan kotoran dan sebum tanpa merusak pH alami kulit asam (5.0 - 6.0), ideal untuk pori tersumbat.',
+        avoidIf: 'Kulit terkelupas akibat dermatitis kontak parah',
+        steps: 'Langkah 1: Pembersih Wajah',
+        badgeColor: 'bg-emerald-100 text-emerald-800'
+      },
+      {
+        id: 'c2',
+        category: 'cleanser',
+        name: '5X Ceramide Low pH Cleanser',
+        brand: 'Skintific',
+        price: 99000,
+        tier: 'budget',
+        size: '80ml',
+        rating: 4.9,
+        time: ['am', 'pm'],
+        targets: ['barrier', 'dry', 'acne'],
+        pregnancySafe: true,
+        alcoholFree: true,
+        keyIngredients: ['5X Ceramide', 'Amino Acid', 'Niacinamide', 'Hyaluronic Acid'],
+        whyRecommended: 'Menggunakan surfaktan asam amino yang sangat lembut dan kaya ceramide untuk memperbaiki barrier yang kemerahan.',
+        avoidIf: 'Tidak ada kontraindikasi utama',
+        steps: 'Langkah 1: Pembersih Wajah',
+        badgeColor: 'bg-blue-100 text-blue-800'
+      },
+      {
+        id: 'c3',
+        category: 'cleanser',
+        name: 'Hydra Rose Gel to Foam Cleanser',
+        brand: 'Wardah',
+        price: 39000,
+        tier: 'budget',
+        size: '100ml',
+        rating: 4.7,
+        time: ['am', 'pm'],
+        targets: ['dry', 'brightening'],
+        pregnancySafe: true,
+        alcoholFree: true,
+        keyIngredients: ['Avalanche Rose Oil', '72 Hours Hydrating Active'],
+        whyRecommended: 'Membersihkan sekaligus menjaga hidrasi hingga 72 jam, mencegah sensasi kulit tertarik setelah cuci muka.',
+        avoidIf: 'Sangat alergi terhadap ekstrak mawar',
+        steps: 'Langkah 1: Pembersih Wajah',
+        badgeColor: 'bg-rose-100 text-rose-800'
+      },
+
+      // Toners
+      {
+        id: 't1',
+        category: 'toner',
+        name: 'Heartleaf 77% Soothing Toner',
+        brand: 'Anua',
+        price: 219000,
+        tier: 'mid',
+        size: '250ml',
+        rating: 4.9,
+        time: ['am', 'pm'],
+        targets: ['barrier', 'acne'],
+        pregnancySafe: true,
+        alcoholFree: true,
+        keyIngredients: ['77% Houttuynia Cordata Extract', 'Centella Asiatica', 'Panthenol'],
+        whyRecommended: 'Sangat efektif meredakan iritasi, kemerahan (eritema), dan menenangkan jerawat yang sedang meradang.',
+        avoidIf: 'Tidak ada kontraindikasi utama',
+        steps: 'Langkah 2: Toner Penenang',
+        badgeColor: 'bg-emerald-100 text-emerald-800'
+      },
+      {
+        id: 't2',
+        category: 'toner',
+        name: 'Cica-B5 Soothing Essence Toner',
+        brand: 'The Originote',
+        price: 42000,
+        tier: 'budget',
+        size: '80ml',
+        rating: 4.8,
+        time: ['am', 'pm'],
+        targets: ['acne', 'barrier'],
+        pregnancySafe: true,
+        alcoholFree: true,
+        keyIngredients: ['Centella Asiatica', 'Panthenol (Pro-Vitamin B5)'],
+        whyRecommended: 'Toner hidrasi terjangkau yang mempercepat regenerasi sel kulit dan mengontrol kemerahan pada jerawat aktif.',
+        avoidIf: 'Kulit sensitif ekstrem terhadap cica',
+        steps: 'Langkah 2: Toner Hidrasi',
+        badgeColor: 'bg-teal-100 text-teal-800'
+      },
+      {
+        id: 't3',
+        category: 'toner',
+        name: 'Miraculous Refining Toner (AHA BHA PHA)',
+        brand: 'Avoskin',
+        price: 175000,
+        tier: 'mid',
+        size: '100ml',
+        rating: 4.8,
+        time: ['pm'],
+        targets: ['acne', 'oily', 'brightening'],
+        pregnancySafe: false, // AHA BHA high
+        alcoholFree: true,
+        keyIngredients: ['AHA 5%', 'BHA 1%', 'PHA 2%', 'Niacinamide 2%', 'Tea Tree'],
+        whyRecommended: 'Mengikis sel kulit mati dan membersihkan sumbatan sebum pada pori-pori yang memicu komedo hitam/putih.',
+        avoidIf: 'Kulit sedang terkelupas parah atau sedang hamil',
+        steps: 'Langkah 2: Exfoliating Toner (Malam)',
+        badgeColor: 'bg-amber-100 text-amber-800'
+      },
+
+      // Serums
+      {
+        id: 's1',
+        category: 'serum',
+        name: '2% Salicylic Acid Anti Acne Serum',
+        brand: 'Skintific',
+        price: 135000,
+        tier: 'mid',
+        size: '20ml',
+        rating: 4.9,
+        time: ['am', 'pm'],
+        targets: ['acne', 'oily'],
+        pregnancySafe: false,
+        alcoholFree: true,
+        keyIngredients: ['Salicylic Acid 2%', 'Pionin', 'Centella Asiatica', 'Niacinamide'],
+        whyRecommended: 'Menembus ke dalam pori-pori berlemak untuk membunuh bakteri P. acnes dan meredakan jerawat dalam 3 hari.',
+        avoidIf: 'Ibu hamil/menyusui atau alergi aspirin',
+        steps: 'Langkah 3: Serum Target Jerawat',
+        badgeColor: 'bg-rose-100 text-rose-800'
+      },
+      {
+        id: 's2',
+        category: 'serum',
+        name: '5% Niacinamide + Moisture Sabi Beet Serum',
+        brand: 'Somethinc',
+        price: 119000,
+        tier: 'mid',
+        size: '20ml',
+        rating: 4.8,
+        time: ['am', 'pm'],
+        targets: ['brightening', 'oily'],
+        pregnancySafe: true,
+        alcoholFree: true,
+        keyIngredients: ['Sabiwhite®', '5% Niacinamide', 'Beet Extract', 'Centella Water'],
+        whyRecommended: 'Sabiwhite 16x lebih kuat dari hidrokuinon dalam memudarkan noda bekas jerawat (PIH) dan meratakan warna kulit.',
+        avoidIf: 'Sensitivitas tinggi pada konsentrasi niacinamide',
+        steps: 'Langkah 3: Serum Mencerahkan',
+        badgeColor: 'bg-amber-100 text-amber-800'
+      },
+      {
+        id: 's3',
+        category: 'serum',
+        name: 'Hyalu-Cica Blue Serum',
+        brand: 'Skin1004',
+        price: 185000,
+        tier: 'mid',
+        size: '50ml',
+        rating: 4.9,
+        time: ['am', 'pm'],
+        targets: ['barrier', 'dry'],
+        pregnancySafe: true,
+        alcoholFree: true,
+        keyIngredients: ['Centella Madagascar', '5 Layers Hyaluronic Acid', 'Ceramide Biom'],
+        whyRecommended: 'Memberikan hidrasi mendalam hingga lapisan dermis untuk kulit dehidrasi yang memicu produksi minyak kompensasi.',
+        avoidIf: 'Tidak ada kontraindikasi utama',
+        steps: 'Langkah 3: Serum Hidrasi Mendalam',
+        badgeColor: 'bg-cyan-100 text-cyan-800'
+      },
+      {
+        id: 's4',
+        category: 'serum',
+        name: 'Gluta-Bright B3 Serum',
+        brand: 'The Originote',
+        price: 39000,
+        tier: 'budget',
+        size: '20ml',
+        rating: 4.7,
+        time: ['am', 'pm'],
+        targets: ['brightening'],
+        pregnancySafe: true,
+        alcoholFree: true,
+        keyIngredients: ['Glutathione', 'Niacinamide', 'Jeju Hallabong'],
+        whyRecommended: 'Mencerahkan flek hitam dan noda kusam dengan antioksidan kuat namun dengan harga yang sangat terjangkau.',
+        avoidIf: 'Tidak ada kontraindikasi utama',
+        steps: 'Langkah 3: Serum Pencerah Flek',
+        badgeColor: 'bg-orange-100 text-orange-800'
+      },
+
+      // Moisturizers
+      {
+        id: 'm1',
+        category: 'moisturizer',
+        name: '5X Ceramide Barrier Repair Moisture Gel',
+        brand: 'Skintific',
+        price: 139000,
+        tier: 'mid',
+        size: '30g',
+        rating: 4.9,
+        time: ['am', 'pm'],
+        targets: ['barrier', 'acne', 'dry'],
+        pregnancySafe: true,
+        alcoholFree: true,
+        keyIngredients: ['5X Ceramide (NP, NS, AS, EOP, AP)', 'Hyaluronic Acid', 'Centella'],
+        whyRecommended: 'Krim gel ringan yang meniru struktur lipid kulit asli. Mengunci kelembapan dan mempercepat pemulihan skin barrier.',
+        avoidIf: 'Tidak ada kontraindikasi utama',
+        steps: 'Langkah 4: Pelembap Pengunci Barrier',
+        badgeColor: 'bg-blue-100 text-blue-800'
+      },
+      {
+        id: 'm2',
+        category: 'moisturizer',
+        name: 'Hyalucera Moisturizer Gel',
+        brand: 'The Originote',
+        price: 45000,
+        tier: 'budget',
+        size: '50ml',
+        rating: 4.8,
+        time: ['am', 'pm'],
+        targets: ['oily', 'barrier'],
+        pregnancySafe: true,
+        alcoholFree: true,
+        keyIngredients: ['Hyaluronic Acid', 'Ceramide', 'Chlorella'],
+        whyRecommended: 'Tekstur jelly dingin yang cepat meresap tanpa meninggalkan rasa lengket, cocok untuk kulit berminyak tropis.',
+        avoidIf: 'Kulit sangat kering membutuhkan lipid berat (heavy cream)',
+        steps: 'Langkah 4: Pelembap Gel Ringan',
+        badgeColor: 'bg-teal-100 text-teal-800'
+      },
+      {
+        id: 'm3',
+        category: 'moisturizer',
+        name: 'Centella Allantoin Soothing Gel',
+        brand: 'Glad2Glow',
+        price: 43000,
+        tier: 'budget',
+        size: '55g',
+        rating: 4.8,
+        time: ['am', 'pm'],
+        targets: ['acne', 'barrier'],
+        pregnancySafe: true,
+        alcoholFree: true,
+        keyIngredients: ['Centella Asiatica', 'Allantoin'],
+        whyRecommended: 'Menenangkan rasa perih saat berjerawat aktif dan mengontrol sekresi minyak berlebih sepanjang hari.',
+        avoidIf: 'Tidak ada kontraindikasi utama',
+        steps: 'Langkah 4: Pelembap Penyejuk Jerawat',
+        badgeColor: 'bg-emerald-100 text-emerald-800'
+      },
+
+      // Sunscreens
+      {
+        id: 'ss1',
+        category: 'sunscreen',
+        name: 'Hydrasoothe Sunscreen Gel SPF 45 PA++++',
+        brand: 'Azarine',
+        price: 65000,
+        tier: 'budget',
+        size: '50ml',
+        rating: 4.9,
+        time: ['am'],
+        targets: ['acne', 'oily', 'barrier'],
+        pregnancySafe: true,
+        alcoholFree: true,
+        keyIngredients: ['Propolis', 'Aloe Vera', 'Green Tea', 'Pomegranate'],
+        whyRecommended: 'Formula gel seringan air tanpa white cast, bebas alkohol, dan tidak menyumbat pori (*non-comedogenic*).',
+        avoidIf: 'Alergi propolis lebah',
+        steps: 'Langkah 5 (Pagi): Perlindungan Tabir Surya',
+        badgeColor: 'bg-amber-100 text-amber-800'
+      },
+      {
+        id: 'ss2',
+        category: 'sunscreen',
+        name: 'UV Shield Airy Smooth Sunscreen Serum SPF 50',
+        brand: 'Wardah',
+        price: 55000,
+        tier: 'budget',
+        size: '40ml',
+        rating: 4.8,
+        time: ['am'],
+        targets: ['brightening', 'oily'],
+        pregnancySafe: true,
+        alcoholFree: true,
+        keyIngredients: ['Centella Asiatica', 'Bera-Carotene', 'Rayami Filter'],
+        whyRecommended: 'Hasil akhir matte halus yang menyamarkan pori-pori dan melindungi dari radiasi sinar UVA, UVB, & Blue Light.',
+        avoidIf: 'Tidak ada kontraindikasi utama',
+        steps: 'Langkah 5 (Pagi): Perlindungan Tabir Surya',
+        badgeColor: 'bg-rose-100 text-rose-800'
+      },
+      {
+        id: 'ss3',
+        category: 'sunscreen',
+        name: 'All Day Light Sunscreen SPF 50 PA++++',
+        brand: 'Skintific',
+        price: 119000,
+        tier: 'mid',
+        size: '30ml',
+        rating: 4.9,
+        time: ['am'],
+        targets: ['barrier', 'dry'],
+        pregnancySafe: true,
+        alcoholFree: true,
+        keyIngredients: ['Tinosorb S/M', 'Ceramide', 'Centella'],
+        whyRecommended: 'Melindungi skin barrier sekaligus menjaga hidrasi dan ketahanan kulit terhadap polusi perkotaan.',
+        avoidIf: 'Tidak ada kontraindikasi utama',
+        steps: 'Langkah 5 (Pagi): Perlindungan Tabir Surya',
+        badgeColor: 'bg-blue-100 text-blue-800'
+      }
+    ];
+
+    // --- APPLICATION STATE ---
+    let currentInputMode = 'upload'; // 'upload' or 'camera'
+    let currentImage = null; // Image object or video stream
+    let webcamStream = null;
+    let selectedBudget = 'all'; // 'budget', 'mid', 'all'
+    let selectedRoutineTime = 'all'; // 'all', 'am', 'pm'
+    let isAnalyzing = false;
+    let showOverlays = true;
+
+    // Detected skin profile data
+    let currentAnalysis = {
+      score: 76,
+      status: 'Perlu Perhatian Khusus',
+      statusColor: 'amber',
+      skinType: 'Kombinasi Cenderung Berjerawat',
+      tZoneNote: 'T-Zone Berminyak & Pori Terbuka • U-Zone Normal/Kering',
+      description: 'AI mendeteksi produksi sebum berlebih di zona T dengan beberapa komedo dan papula jerawat di dagu. Skin barrier bagian pipi relatif stabil namun memerlukan hidrasi seimbang.',
+      metrics: {
+        acne: { level: 'Sedang (65%)', percent: 65, note: 'Beberapa jerawat aktif di dahi & dagu', color: 'rose' },
+        redness: { level: 'Sensitif Ringan (42%)', percent: 42, note: 'Kemerahan di sekitar cuping hidung', color: 'amber' },
+        pores: { level: 'Tinggi (74%)', percent: 74, note: 'Pori-pori membesar di area hidung & dahi', color: 'amber' },
+        darkSpots: { level: 'Rendah (28%)', percent: 28, note: 'Bekas jerawat kemerahan (PIE)', color: 'emerald' },
+        hydration: { level: 'Cukup (68%)', percent: 68, note: 'Kelembapan pipi cukup baik', color: 'blue' }
+      },
+      recommendedIngredients: ['Salicylic Acid 2%', 'Niacinamide 5%', '5X Ceramide', 'Centella Asiatica', 'Hyaluronic Acid'],
+      avoidIngredients: ['Scrub Fisik Berbutir Kasar', 'Alkohol Denat Konsentrasi Tinggi', 'Minyak Kelapa Murni (Comedogenic)', 'Fragrance Kuat'],
+      hotspots: [
+        { x: 50, y: 32, label: 'T-Zone Sebum & Pori Terbuka', type: 'pore' },
+        { x: 51, y: 55, label: 'Komedo di Hidung', type: 'acne' },
+        { x: 42, y: 72, label: 'Papula Jerawat Meradang', type: 'acne' },
+        { x: 34, y: 52, label: 'Kemerahan Ringan (Eritema)', type: 'redness' }
+      ],
+      primaryTarget: 'acne'
+    };
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      initNavigation();
+      initCanvas();
+    });
+
+    function initNavigation() {
+      document.getElementById('btnScrollScan').addEventListener('click', () => {
+        document.getElementById('scanSection').scrollIntoView({ behavior: 'smooth' });
+      });
+      document.getElementById('btnScrollCatalog').addEventListener('click', () => {
+        const cat = document.getElementById('catalogSection');
+        if (cat) cat.scrollIntoView({ behavior: 'smooth' });
+        else document.getElementById('scanSection').scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+
+    function initCanvas() {
+      const canvas = document.getElementById('faceCanvas');
+      canvas.width = 640;
+      canvas.height = 480;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#1c1917';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // --- INPUT MODES: UPLOAD VS CAMERA ---
+    function switchInputMode(mode) {
+      currentInputMode = mode;
+      const btnUpload = document.getElementById('tabUpload');
+      const btnCamera = document.getElementById('tabCamera');
+      const btnTriggerUpload = document.getElementById('btnTriggerUpload');
+      const btnCaptureCamera = document.getElementById('btnCaptureCamera');
+      const video = document.getElementById('webcamVideo');
+
+      if (mode === 'upload') {
+        stopWebcam();
+        btnUpload.className = "px-3 py-1 rounded-full font-medium bg-stone-900 text-white transition";
+        btnCamera.className = "px-3 py-1 rounded-full font-medium bg-stone-100 text-stone-700 hover:bg-stone-200 transition";
+        btnTriggerUpload.classList.remove('hidden');
+        btnCaptureCamera.classList.add('hidden');
+        video.classList.add('hidden');
+      } else {
+        btnCamera.className = "px-3 py-1 rounded-full font-medium bg-stone-900 text-white transition";
+        btnUpload.className = "px-3 py-1 rounded-full font-medium bg-stone-100 text-stone-700 hover:bg-stone-200 transition";
+        btnTriggerUpload.classList.add('hidden');
+        btnCaptureCamera.classList.remove('hidden');
+        startWebcam();
+      }
+    }
+
+    async function startWebcam() {
+      const video = document.getElementById('webcamVideo');
+      const placeholder = document.getElementById('emptyPlaceholder');
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } },
+          audio: false
+        });
+        webcamStream = stream;
+        video.srcObject = stream;
+        video.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+        document.getElementById('guideOverlay').classList.remove('hidden');
+      } catch (err) {
+        console.warn("Webcam access error:", err);
+        alert("Tidak dapat mengakses kamera: " + err.message + ". Silakan gunakan opsi Unggah Foto atau pilih contoh profil.");
+        switchInputMode('upload');
+      }
+    }
+
+    function stopWebcam() {
+      if (webcamStream) {
+        webcamStream.getTracks().forEach(track => track.stop());
+        webcamStream = null;
+      }
+      const video = document.getElementById('webcamVideo');
+      video.srcObject = null;
+      video.classList.add('hidden');
+    }
+
+    function takeSnapshot() {
+      const video = document.getElementById('webcamVideo');
+      const canvas = document.getElementById('faceCanvas');
+      const ctx = canvas.getContext('2d');
+
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+
+      // Invert mirror horizontally for snapshot
+      ctx.save();
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
+
+      stopWebcam();
+      document.getElementById('guideOverlay').classList.add('hidden');
+      document.getElementById('emptyPlaceholder').classList.add('hidden');
+      document.getElementById('btnRunAnalysis').disabled = false;
+      document.getElementById('tabCamera').className = "px-3 py-1 rounded-full font-medium bg-stone-100 text-stone-700 hover:bg-stone-200 transition";
+      document.getElementById('tabUpload').className = "px-3 py-1 rounded-full font-medium bg-stone-900 text-white transition";
+      document.getElementById('btnCaptureCamera').classList.add('hidden');
+      document.getElementById('btnTriggerUpload').classList.remove('hidden');
+
+      // Create an image object for re-analysis
+      const img = new Image();
+      img.src = canvas.toDataURL('image/jpeg');
+      currentImage = img;
+
+      updateStatusBadge("Foto dari kamera berhasil diambil. Klik 'Mulai Analisis AI'.", "amber");
+    }
+
+    function handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          currentImage = img;
+          const canvas = document.getElementById('faceCanvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+
+          document.getElementById('emptyPlaceholder').classList.add('hidden');
+          document.getElementById('guideOverlay').classList.add('hidden');
+          document.getElementById('btnRunAnalysis').disabled = false;
+          updateStatusBadge("Foto berhasil dimuat. Klik 'Mulai Analisis AI' untuk mendeteksi.", "amber");
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // --- PRESET PROFILES (INSTANT DEMO) ---
+    function loadSampleProfile(type) {
+      stopWebcam();
+      switchInputMode('upload');
+      
+      const canvas = document.getElementById('faceCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 640;
+      canvas.height = 540;
+
+      // Draw stylized anatomical face canvas for visualization
+      drawSyntheticFace(ctx, canvas.width, canvas.height, type);
+
+      document.getElementById('emptyPlaceholder').classList.add('hidden');
+      document.getElementById('guideOverlay').classList.add('hidden');
+      document.getElementById('btnRunAnalysis').disabled = false;
+
+      // Set profile parameters based on preset
+      if (type === 'acne_oily') {
+        currentAnalysis = {
+          score: 64,
+          status: 'Perlu Perhatian Cepat',
+          statusColor: 'rose',
+          skinType: 'Berminyak & Acne-Prone',
+          tZoneNote: 'Sebum Tinggi di Dahi & Hidung • Papula di Dagu',
+          description: 'Kelenjar sebaceous sangat aktif di area T-zone menyebabkan sumbatan pori dan beberapa jerawat inflamasi di pipi & dagu. Memerlukan bahan keratolitik dan antibakteri.',
+          metrics: {
+            acne: { level: 'Tinggi (78%)', percent: 78, note: '5 papula aktif & komedo tertutup di dagu', color: 'rose' },
+            redness: { level: 'Sedang (58%)', percent: 58, note: 'Inflamasi sekitar lesi jerawat', color: 'amber' },
+            pores: { level: 'Sangat Terbuka (82%)', percent: 82, note: 'Pori membesar di cuping & dahi', color: 'rose' },
+            darkSpots: { level: 'Sedang (45%)', percent: 45, note: 'Noda PIE (Post-Inflammatory Erythema)', color: 'amber' },
+            hydration: { level: 'Kurang (48%)', percent: 48, note: 'Dehidrasi permukaan memicu kompensasi minyak', color: 'rose' }
+          },
+          recommendedIngredients: ['Salicylic Acid 2%', 'Tea Tree Extract', 'Niacinamide 5%', 'Centella Asiatica', 'Zinc PCA'],
+          avoidIngredients: ['Face Oil Berat (Coconut/Palm Oil)', 'Scrub Fisik Berbutir', 'Krim Berbasis Oklusif Tebal', 'Alkohol Denat Kering'],
+          hotspots: [
+            { x: 50, y: 30, label: 'T-Zone: Sebum Tinggi & Pori Membesar', type: 'pore' },
+            { x: 38, y: 55, label: 'Pipi Kiri: Jerawat Papula', type: 'acne' },
+            { x: 52, y: 76, label: 'Dagu: Inflamasi & Komedo', type: 'acne' },
+            { x: 62, y: 58, label: 'Kemerahan Peradangan', type: 'redness' }
+          ],
+          primaryTarget: 'acne'
+        };
+      } else if (type === 'dull_hyperpigmentation') {
+        currentAnalysis = {
+          score: 74,
+          status: 'Kondisi Cukup Baik',
+          statusColor: 'amber',
+          skinType: 'Kombinasi Kusam & Hiperpigmentasi',
+          tZoneNote: 'Warna Kulit Tidak Merata • Bekas Jerawat Cokelat (PIH)',
+          description: 'Tekstur kulit halus namun terdapat hiperpigmentasi pasca jerawat dan bercak flek matahari di tulang pipi. Memerlukan inhibitor tirosinase dan eksfoliasi lembut.',
+          metrics: {
+            acne: { level: 'Rendah (20%)', percent: 20, note: 'Tidak ada jerawat aktif yang parah', color: 'emerald' },
+            redness: { level: 'Rendah (22%)', percent: 22, note: 'Barrier kulit tenang', color: 'emerald' },
+            pores: { level: 'Sedang (42%)', percent: 42, note: 'Pori dalam batas normal', color: 'emerald' },
+            darkSpots: { level: 'Tinggi (79%)', percent: 79, note: 'Flek hitam dan noda bekas jerawat PIH', color: 'rose' },
+            hydration: { level: 'Sedang (62%)', percent: 62, note: 'Perlu kelembapan ekstra untuk glow', color: 'amber' }
+          },
+          recommendedIngredients: ['Sabiwhite®', 'Niacinamide 5%', 'Glutathione', 'Vitamin C / Ascorbic', 'AHA Mandelic Acid'],
+          avoidIngredients: ['Terpapar Terik Tanpa Sunscreen SPF 50', 'Merokok & Dehidrasi', 'Pengelupasan Paksa'],
+          hotspots: [
+            { x: 35, y: 52, label: 'Tulang Pipi Kiri: Flek Hitam & PIH', type: 'dark_spot' },
+            { x: 65, y: 54, label: 'Tulang Pipi Kanan: Melasma Ringan', type: 'dark_spot' },
+            { x: 50, y: 34, label: 'Dahi: Warna Belang / Kusam', type: 'dull' }
+          ],
+          primaryTarget: 'brightening'
+        };
+      } else if (type === 'dry_barrier_damaged') {
+        currentAnalysis = {
+          score: 62,
+          status: 'Skin Barrier Rusak',
+          statusColor: 'rose',
+          skinType: 'Kering, Dehidrasi & Sangat Sensitif',
+          tZoneNote: 'Flaky / Mengelupas • Kemerahan Meluas',
+          description: 'Lapisan pelindung kelembapan (stratum corneum) mengalami kerusakan lipid akibat over-exfoliation atau cuaca. Terasa perih, kencang, dan rentan alergi.',
+          metrics: {
+            acne: { level: 'Rendah (18%)', percent: 18, note: 'Bukan jerawat hormonal', color: 'emerald' },
+            redness: { level: 'Tinggi (84%)', percent: 84, note: 'Eritema & pembuluh kapiler tampak di pipi', color: 'rose' },
+            pores: { level: 'Rendah (25%)', percent: 25, note: 'Pori rapat namun sangat kering', color: 'emerald' },
+            darkSpots: { level: 'Rendah (15%)', percent: 15, note: 'Tidak ada masalah pigmentasi', color: 'emerald' },
+            hydration: { level: 'Sangat Kritis (24%)', percent: 24, note: 'Kadar air sangat rendah, mengelupas', color: 'rose' }
+          },
+          recommendedIngredients: ['5X Ceramide Kompleks', 'Panthenol B5', 'Centella Asiatica', 'Hyaluronic Acid Multi-Moisture', 'Allantoin'],
+          avoidIngredients: ['Semua Jenis Asam Eksfoliasi (AHA/BHA/Retinol)', 'Essential Oils & Fragrance', 'Air Panas Saat Cuci Muka', 'Cleanser Berbusa Lebat (SLS)'],
+          hotspots: [
+            { x: 36, y: 52, label: 'Pipi Kiri: Barrier Terkikis & Kemerahan', type: 'redness' },
+            { x: 64, y: 52, label: 'Pipi Kanan: Sensasi Perih & Kering', type: 'redness' },
+            { x: 50, y: 68, label: 'Sekitar Mulut: Kulit Mengelupas (Flaking)', type: 'dry' }
+          ],
+          primaryTarget: 'barrier'
+        };
+      } else {
+        currentAnalysis = {
+          score: 86,
+          status: 'Kondisi Prima & Sehat',
+          statusColor: 'emerald',
+          skinType: 'Normal Menuju Dewasa (Mature/Aging)',
+          tZoneNote: 'Garis Halus Ringan • Kelembapan Terjaga',
+          description: 'Kesehatan kulit sangat baik secara umum dengan elastisitas yang terjaga. Terdeteksi garis tawa halus (smile lines) dan kebutuhan nutrisi pencegahan penuaan dini.',
+          metrics: {
+            acne: { level: 'Sangat Rendah (10%)', percent: 10, note: 'Bersih tanpa komedo aktif', color: 'emerald' },
+            redness: { level: 'Sangat Rendah (12%)', percent: 12, note: 'Barrier kulit kokoh', color: 'emerald' },
+            pores: { level: 'Rendah (30%)', percent: 30, note: 'Tekstur halus dan elastis', color: 'emerald' },
+            darkSpots: { level: 'Rendah (24%)', percent: 24, note: 'Sedikit noda penuaan samar', color: 'emerald' },
+            hydration: { level: 'Sangat Baik (85%)', percent: 85, note: 'Plump & kenyal', color: 'emerald' }
+          },
+          recommendedIngredients: ['Peptide Kompleks', 'Marine Collagen', 'Ceramide', 'Antioxidant Vitamin E', 'Broad-Spectrum SPF 50'],
+          avoidIngredients: ['Tidur Larut Malam', 'Lewat Penggunaan Sunscreen', 'Gula Berlebih (Glikasi Kolagen)'],
+          hotspots: [
+            { x: 40, y: 64, label: 'Garis Halus Tawa (Nasolabial)', type: 'aging' },
+            { x: 60, y: 64, label: 'Garis Halus Tawa Kanan', type: 'aging' },
+            { x: 50, y: 26, label: 'Dahi: Garis Ekspresi Halus', type: 'aging' }
+          ],
+          primaryTarget: 'antiaging'
+        };
+      }
+
+      // Automatically run analysis on sample selection for immediate delight
+      startAnalysis();
+    }
+
+    // Canvas drawing helper for procedural aesthetic skin face
+    function drawSyntheticFace(ctx, w, h, type) {
+      // Background gradient
+      const bgGrad = ctx.createRadialGradient(w/2, h/2, 50, w/2, h/2, 320);
+      bgGrad.addColorStop(0, '#2d2424');
+      bgGrad.addColorStop(1, '#141212');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      // Face Base Oval
+      ctx.save();
+      ctx.beginPath();
+      ctx.ellipse(w/2, h/2, 160, 210, 0, 0, Math.PI * 2);
+      
+      let faceSkinColor = '#f5d6c6';
+      if (type === 'dry_barrier_damaged') faceSkinColor = '#fcd5d0';
+      if (type === 'dull_hyperpigmentation') faceSkinColor = '#e8cbb6';
+      if (type === 'acne_oily') faceSkinColor = '#f1d0bc';
+
+      ctx.fillStyle = faceSkinColor;
+      ctx.shadowColor = 'rgba(0,0,0,0.4)';
+      ctx.shadowBlur = 30;
+      ctx.fill();
+      ctx.restore();
+
+      // Facial shadows / contours (cheeks, nose)
+      ctx.fillStyle = 'rgba(180, 110, 90, 0.15)';
+      ctx.beginPath(); // Left cheek shade
+      ctx.ellipse(w/2 - 95, h/2 + 20, 45, 75, -0.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath(); // Right cheek shade
+      ctx.ellipse(w/2 + 95, h/2 + 20, 45, 75, 0.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Nose bridge
+      ctx.fillStyle = 'rgba(170, 100, 80, 0.2)';
+      ctx.beginPath();
+      ctx.moveTo(w/2 - 10, h/2 - 60);
+      ctx.lineTo(w/2 + 10, h/2 - 60);
+      ctx.lineTo(w/2 + 18, h/2 + 25);
+      ctx.lineTo(w/2 - 18, h/2 + 25);
+      ctx.closePath();
+      ctx.fill();
+
+      // Eyes representation
+      ctx.fillStyle = 'rgba(60, 40, 35, 0.4)';
+      ctx.beginPath();
+      ctx.ellipse(w/2 - 60, h/2 - 35, 26, 8, -0.05, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(w/2 + 60, h/2 - 35, 26, 8, 0.05, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Lips
+      ctx.fillStyle = 'rgba(210, 100, 100, 0.55)';
+      ctx.beginPath();
+      ctx.ellipse(w/2, h/2 + 95, 42, 14, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Specific conditions procedural markers
+      if (type === 'acne_oily') {
+        // Red pimples & oily shine on forehead
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.beginPath();
+        ctx.ellipse(w/2, h/2 - 110, 50, 25, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Red spots
+        ctx.fillStyle = '#ef4444';
+        const spots = [[w/2-70, h/2+20], [w/2-50, h/2+45], [w/2+10, h/2+135], [w/2-15, h/2+140], [w/2+15, h/2+25]];
+        spots.forEach(([x, y]) => {
+          ctx.beginPath();
+          ctx.arc(x, y, 6, 0, Math.PI * 2);
+          ctx.fill();
+          // Halo
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        });
+      } else if (type === 'dry_barrier_damaged') {
+        // Red blush irritation on both cheeks
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.35)';
+        ctx.beginPath();
+        ctx.ellipse(w/2 - 75, h/2 + 20, 50, 45, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(w/2 + 75, h/2 + 20, 50, 45, 0, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (type === 'dull_hyperpigmentation') {
+        // Dark brown spots
+        ctx.fillStyle = 'rgba(110, 65, 40, 0.65)';
+        const spots = [
+          [w/2 - 85, h/2 + 10], [w/2 - 70, h/2 + 25], [w/2 - 95, h/2 + 30],
+          [w/2 + 80, h/2 + 15], [w/2 + 95, h/2 + 22]
+        ];
+        spots.forEach(([x, y]) => {
+          ctx.beginPath();
+          ctx.arc(x, y, 5, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+    }
+
+    // --- AI ANALYSIS SIMULATION ---
+    function startAnalysis() {
+      if (isAnalyzing) return;
+      isAnalyzing = true;
+
+      const runBtn = document.getElementById('btnRunAnalysis');
+      const spinner = document.getElementById('runBtnSpinner');
+      const btnText = document.getElementById('runBtnText');
+      const scanBar = document.getElementById('scanningBar');
+      const statusBox = document.getElementById('aiStatusBox');
+
+      runBtn.disabled = true;
+      spinner.classList.remove('hidden');
+      btnText.textContent = "AI Sedang Memindai...";
+      scanBar.classList.remove('hidden');
+
+      updateStatusBadge("Menganalisis matriks warna, tekstur pori, dan anomali kulit wajah...", "rose");
+
+      // Check if user uploaded a custom photo (do heuristic analysis on image if available)
+      if (currentImage && currentInputMode === 'upload' && !currentAnalysis.customDone) {
+        performImageHeuristics(currentImage);
+      }
+
+      // Check priority override from dropdown
+      const prioritySelect = document.getElementById('selectPriority').value;
+      if (prioritySelect !== 'auto') {
+        currentAnalysis.primaryTarget = prioritySelect;
+      }
+
+      setTimeout(() => {
+        isAnalyzing = false;
+        runBtn.disabled = false;
+        spinner.classList.add('hidden');
+        btnText.textContent = "Ulangi Analisis";
+        scanBar.classList.add('hidden');
+
+        document.getElementById('btnToggleOverlay').classList.remove('hidden');
+
+        // Render results and show section
+        renderAnalysisResults();
+        renderHotspotsOnCanvas();
+        applyFiltersAndRender();
+
+        const resultsSection = document.getElementById('resultsSection');
+        resultsSection.classList.remove('hidden');
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+        updateStatusBadge("Analisis selesai! Rekomendasi produk siap ditinjau di bawah.", "emerald");
+      }, 1600);
+    }
+
+    function performImageHeuristics(img) {
+      // Real canvas pixel sampling to evaluate brightness & redness ratio
+      try {
+        const canvas = document.getElementById('faceCanvas');
+        const ctx = canvas.getContext('2d');
+        const sampleW = Math.min(canvas.width, 200);
+        const sampleH = Math.min(canvas.height, 200);
+        const imgData = ctx.getImageData(canvas.width/4, canvas.height/4, sampleW, sampleH);
+        const data = imgData.data;
+
+        let totalR = 0, totalG = 0, totalB = 0;
+        let count = 0;
+        for (let i = 0; i < data.length; i += 16) {
+          totalR += data[i];
+          totalG += data[i+1];
+          totalB += data[i+2];
+          count++;
+        }
+        const avgR = totalR / count;
+        const avgG = totalG / count;
+        const avgB = totalB / count;
+        const rednessRatio = avgR / (avgG + 1);
+
+        // If redness is noticeably high, adapt profile
+        if (rednessRatio > 1.35) {
+          currentAnalysis.metrics.redness.percent = Math.min(85, Math.round(rednessRatio * 45));
+          currentAnalysis.metrics.redness.level = 'Tinggi (' + currentAnalysis.metrics.redness.percent + '%)';
+          currentAnalysis.primaryTarget = 'barrier';
+        }
+        currentAnalysis.customDone = true;
+      } catch (e) {
+        console.warn("Pixel analysis fallback:", e);
+      }
+    }
+
+    function updateStatusBadge(text, color) {
+      const box = document.getElementById('aiStatusBox');
+      const colors = {
+        amber: 'bg-amber-50/80 border-amber-200/80 text-amber-900',
+        rose: 'bg-rose-50/80 border-rose-200/80 text-rose-900',
+        emerald: 'bg-emerald-50/80 border-emerald-200/80 text-emerald-900'
+      };
+      box.className = `p-3.5 rounded-2xl border text-xs flex items-start gap-2.5 transition-all ${colors[color] || colors.amber}`;
+      box.innerHTML = `
+        <svg class="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div class="leading-relaxed"><strong>Status:</strong> ${text}</div>
+      `;
+    }
+
+    // --- RENDER RESULTS ---
+    function renderAnalysisResults() {
+      const ca = currentAnalysis;
+      document.getElementById('scoreNumber').textContent = ca.score;
+      document.getElementById('scoreDescription').textContent = ca.description;
+      document.getElementById('detectedSkinType').textContent = ca.skinType;
+      document.getElementById('tZoneSummary').textContent = ca.tZoneNote;
+
+      // Status badge styling
+      const statusBadge = document.getElementById('scoreStatusBadge');
+      statusBadge.textContent = ca.status;
+      if (ca.statusColor === 'emerald') {
+        statusBadge.className = 'mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800';
+      } else if (ca.statusColor === 'rose') {
+        statusBadge.className = 'mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800';
+      } else {
+        statusBadge.className = 'mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
+      }
+
+      // Metrics
+      document.getElementById('metricAcneLevel').textContent = ca.metrics.acne.level;
+      document.getElementById('barAcne').style.width = ca.metrics.acne.percent + '%';
+      document.getElementById('metricAcneNote').textContent = ca.metrics.acne.note;
+
+      document.getElementById('metricRednessLevel').textContent = ca.metrics.redness.level;
+      document.getElementById('barRedness').style.width = ca.metrics.redness.percent + '%';
+      document.getElementById('metricRednessNote').textContent = ca.metrics.redness.note;
+
+      document.getElementById('metricPoreLevel').textContent = ca.metrics.pores.level;
+      document.getElementById('barPore').style.width = ca.metrics.pores.percent + '%';
+      document.getElementById('metricPoreNote').textContent = ca.metrics.pores.note;
+
+      document.getElementById('metricDarkSpotsLevel').textContent = ca.metrics.darkSpots.level;
+      document.getElementById('barDarkSpots').style.width = ca.metrics.darkSpots.percent + '%';
+      document.getElementById('metricDarkSpotsNote').textContent = ca.metrics.darkSpots.note;
+
+      // Recommended Ingredients Badges
+      const recList = document.getElementById('recommendedIngredientsList');
+      recList.innerHTML = ca.recommendedIngredients.map(ing => `
+        <span class="px-2.5 py-1 rounded-lg bg-emerald-100/80 text-emerald-900 border border-emerald-300 font-semibold text-xs flex items-center gap-1">
+          <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          ${ing}
+        </span>
+      `).join('');
+
+      // Avoid Ingredients Badges
+      const avoidList = document.getElementById('avoidIngredientsList');
+      avoidList.innerHTML = ca.avoidIngredients.map(ing => `
+        <span class="px-2.5 py-1 rounded-lg bg-rose-100/80 text-rose-900 border border-rose-300 font-semibold text-xs flex items-center gap-1">
+          <svg class="w-3 h-3 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          ${ing}
+        </span>
+      `).join('');
+    }
+
+    // --- OVERLAY HOTSPOTS ON CANVAS ---
+    function renderHotspotsOnCanvas() {
+      const container = document.getElementById('canvasOverlayHotspots');
+      container.innerHTML = '';
+      if (!showOverlays) return;
+
+      currentAnalysis.hotspots.forEach((hs, idx) => {
+        const dot = document.createElement('div');
+        dot.className = "absolute pointer-events-auto transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group";
+        dot.style.left = hs.x + '%';
+        dot.style.top = hs.y + '%';
+
+        let badgeColor = 'bg-rose-500 shadow-rose-500/50';
+        if (hs.type === 'pore') badgeColor = 'bg-amber-500 shadow-amber-500/50';
+        if (hs.type === 'dark_spot') badgeColor = 'bg-orange-600 shadow-orange-600/50';
+        if (hs.type === 'redness') badgeColor = 'bg-red-500 shadow-red-500/50';
+
+        dot.innerHTML = `
+          <div class="relative flex items-center justify-center">
+            <span class="w-4 h-4 rounded-full ${badgeColor} shadow-md pulse-glow flex items-center justify-center text-[9px] text-white font-bold">
+              ${idx + 1}
+            </span>
+            <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition duration-200 pointer-events-none z-30 whitespace-nowrap bg-stone-900/90 backdrop-blur-sm text-white text-[11px] font-medium px-2.5 py-1 rounded-lg shadow-lg">
+              ${hs.label}
+              <div class="w-2 h-2 bg-stone-900/90 transform rotate-45 absolute -bottom-1 left-1/2 -translate-x-1/2"></div>
+            </div>
+          </div>
+        `;
+        container.appendChild(dot);
+      });
+    }
+
+    function toggleAnalysisOverlay() {
+      showOverlays = !showOverlays;
+      const btnText = document.getElementById('overlayToggleText');
+      btnText.textContent = showOverlays ? "Sembunyikan Titik Masalah" : "Tampilkan Titik Masalah";
+      renderHotspotsOnCanvas();
+    }
+
+    // --- FILTER & PRODUCT MATCHING ---
+    function setBudgetTier(tier) {
+      selectedBudget = tier;
+      document.getElementById('btnTierBudget').className = tier === 'budget' 
+        ? "py-2 px-3 rounded-xl border-2 border-stone-900 bg-stone-900 text-white text-center text-xs font-medium transition"
+        : "py-2 px-3 rounded-xl border border-stone-200 text-center text-xs font-medium hover:border-rose-300 transition";
+      
+      document.getElementById('btnTierMid').className = tier === 'mid'
+        ? "py-2 px-3 rounded-xl border-2 border-stone-900 bg-stone-900 text-white text-center text-xs font-medium transition"
+        : "py-2 px-3 rounded-xl border border-stone-200 text-center text-xs font-medium hover:border-rose-300 transition";
+
+      document.getElementById('btnTierAll').className = tier === 'all'
+        ? "py-2 px-3 rounded-xl border-2 border-stone-900 bg-stone-900 text-white text-center text-xs font-medium transition"
+        : "py-2 px-3 rounded-xl border border-stone-200 text-center text-xs font-medium hover:border-rose-300 transition";
+
+      const labels = { budget: '< Rp 100rb (Ekonomis)', mid: 'Rp 100rb - 250rb (Populer)', all: 'Semua Anggaran' };
+      document.getElementById('budgetLabel').textContent = labels[tier];
+
+      applyFiltersAndRender();
+    }
+
+    function setRoutineFilter(time) {
+      selectedRoutineTime = time;
+      document.getElementById('tabAllRoutine').className = time === 'all' 
+        ? "px-3.5 py-1.5 rounded-xl bg-white text-stone-900 shadow-sm transition" 
+        : "px-3.5 py-1.5 rounded-xl text-stone-600 hover:text-stone-900 transition";
+      
+      document.getElementById('tabAmRoutine').className = time === 'am' 
+        ? "px-3.5 py-1.5 rounded-xl bg-white text-stone-900 shadow-sm transition" 
+        : "px-3.5 py-1.5 rounded-xl text-stone-600 hover:text-stone-900 transition flex items-center gap-1";
+
+      document.getElementById('tabPmRoutine').className = time === 'pm' 
+        ? "px-3.5 py-1.5 rounded-xl bg-white text-stone-900 shadow-sm transition" 
+        : "px-3.5 py-1.5 rounded-xl text-stone-600 hover:text-stone-900 transition flex items-center gap-1";
+
+      applyFiltersAndRender();
+    }
+
+    function applyFiltersAndRender() {
+      const priorityVal = document.getElementById('selectPriority').value;
+      const targetConcern = priorityVal === 'auto' ? currentAnalysis.primaryTarget : priorityVal;
+      const isPregSafeRequired = document.getElementById('checkPregnancySafe').checked;
+
+      // Filter products
+      let matched = PRODUCT_CATALOG.filter(prod => {
+        // Budget match
+        if (selectedBudget === 'budget' && prod.price > 100000) return false;
+        if (selectedBudget === 'mid' && (prod.price <= 100000 || prod.price > 250000)) return false;
+
+        // Routine Time match
+        if (selectedRoutineTime !== 'all' && !prod.time.includes(selectedRoutineTime)) return false;
+
+        // Pregnancy safe
+        if (isPregSafeRequired && !prod.pregnancySafe) return false;
+
+        return true;
+      });
+
+      // Sort by relevance to target concern
+      matched.sort((a, b) => {
+        const aHas = a.targets.includes(targetConcern) ? 1 : 0;
+        const bHas = b.targets.includes(targetConcern) ? 1 : 0;
+        return bHas - aHas;
+      });
+
+      // Render cards
+      renderProductCards(matched, targetConcern);
+    }
+
+    function renderProductCards(products, targetConcern) {
+      const grid = document.getElementById('productsGrid');
+      document.getElementById('activeCountBadge').textContent = `${products.length} Produk Cocok`;
+
+      if (products.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-stone-500 space-y-2">
+            <svg class="w-10 h-10 mx-auto text-stone-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <p class="font-semibold text-stone-700">Tidak ada produk yang memenuhi kombinasi filter</p>
+            <p class="text-xs">Coba pilih opsi 'Semua Anggaran' atau matikan salah satu filter khusus.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = products.map(prod => {
+        const isDirectMatch = prod.targets.includes(targetConcern);
+        const formatPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(prod.price);
+
+        const timeBadges = prod.time.map(t => t === 'am' ? '☀️ Pagi' : '🌙 Malam').join(' & ');
+
+        return `
+          <div class="bg-white rounded-2xl border ${isDirectMatch ? 'border-rose-200 ring-1 ring-rose-100 shadow-md' : 'border-stone-200 shadow-sm'} p-5 flex flex-col justify-between hover:shadow-lg transition-all group">
+            
+            <div class="space-y-3">
+              <!-- Top tags -->
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="px-2.5 py-0.5 rounded-full font-bold bg-stone-100 text-stone-700 uppercase tracking-wide">
+                  ${prod.brand}
+                </span>
+                <span class="font-medium text-stone-500">${timeBadges}</span>
+              </div>
+
+              <!-- Product Name & Step -->
+              <div>
+                <span class="text-[10px] font-bold text-rose-600 block uppercase tracking-wider">${prod.steps}</span>
+                <h4 class="font-bold text-stone-900 text-sm group-hover:text-rose-600 transition leading-snug mt-0.5">
+                  ${prod.name}
+                </h4>
+                <div class="flex items-center gap-2 mt-1 text-xs text-stone-500">
+                  <span class="font-bold text-stone-900 text-sm">${formatPrice}</span>
+                  <span>•</span>
+                  <span>${prod.size}</span>
+                  <span>•</span>
+                  <span class="flex items-center text-amber-500 font-bold">★ ${prod.rating}</span>
+                </div>
+              </div>
+
+              <!-- Key Ingredients -->
+              <div class="pt-1">
+                <div class="text-[10px] font-semibold text-stone-400 uppercase tracking-wider mb-1.5">Bahan Aktif Kunci:</div>
+                <div class="flex flex-wrap gap-1">
+                  ${prod.keyIngredients.map(ing => `<span class="px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 text-[10px] font-medium">${ing}</span>`).join('')}
+                </div>
+              </div>
+
+              <!-- Why recommended summary -->
+              <p class="text-xs text-stone-600 bg-rose-50/50 p-2.5 rounded-xl border border-rose-100/60 leading-relaxed">
+                <strong class="text-rose-700">Kenapa cocok:</strong> ${prod.whyRecommended}
+              </p>
+            </div>
+
+            <!-- Card Action Footer -->
+            <div class="pt-4 mt-4 border-t border-stone-100 flex items-center justify-between">
+              <span class="text-[11px] ${prod.pregnancySafe ? 'text-emerald-700 font-medium' : 'text-stone-400'}">
+                ${prod.pregnancySafe ? '✓ Bumil Friendly' : 'Khusus Non-Bumil'}
+              </span>
+              <button onclick="openProductModal('${prod.id}')" class="px-3 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold flex items-center gap-1 transition">
+                Detail Produk
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
+
+    // --- PRODUCT MODAL DETAIL ---
+    function openProductModal(prodId) {
+      const prod = PRODUCT_CATALOG.find(p => p.id === prodId);
+      if (!prod) return;
+
+      const formatPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(prod.price);
+      const modal = document.getElementById('productDetailModal');
+      const content = document.getElementById('modalContent');
+
+      content.innerHTML = `
+        <div class="space-y-4">
+          <div class="space-y-1">
+            <span class="text-xs font-bold text-rose-600 uppercase tracking-wider">${prod.brand} • ${prod.steps}</span>
+            <h3 class="text-xl font-bold text-stone-900">${prod.name}</h3>
+            <div class="flex items-center gap-3 text-sm pt-1">
+              <span class="text-lg font-bold text-stone-900">${formatPrice}</span>
+              <span class="text-stone-400">Ukuran: ${prod.size}</span>
+              <span class="text-amber-500 font-bold">★ ${prod.rating} / 5.0</span>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 space-y-2 text-xs">
+            <div class="font-bold text-stone-800">Alasan Kecocokan AI:</div>
+            <p class="text-stone-600 leading-relaxed">${prod.whyRecommended}</p>
+          </div>
+
+          <div class="space-y-2">
+            <div class="text-xs font-bold text-stone-700">Daftar Kandungan Utama:</div>
+            <div class="flex flex-wrap gap-1.5">
+              ${prod.keyIngredients.map(i => `<span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold text-xs">${i}</span>`).join('')}
+            </div>
+          </div>
+
+          <div class="space-y-1 text-xs">
+            <div class="font-bold text-stone-700">Perhatian & Kontraindikasi:</div>
+            <p class="text-stone-500">${prod.avoidIf}</p>
+          </div>
+
+          <div class="pt-3 border-t border-stone-100 flex items-center justify-between gap-3">
+            <div class="text-[11px] text-stone-500">
+              ${prod.pregnancySafe ? '<span class="text-emerald-600 font-semibold">✓ Aman untuk Ibu Hamil & Menyusui</span>' : '<span class="text-amber-600 font-semibold">⚠ Tidak disarankan untuk Ibu Hamil</span>'}
+            </div>
+            <button onclick="closeProductModal()" class="px-4 py-2 rounded-xl bg-stone-900 text-white font-semibold text-xs hover:bg-stone-800 transition">
+              Tutup
+            </button>
+          </div>
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeProductModal() {
+      const modal = document.getElementById('productDetailModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function resetAll() {
+      stopWebcam();
+      switchInputMode('upload');
+      initCanvas();
+      document.getElementById('emptyPlaceholder').classList.remove('hidden');
+      document.getElementById('guideOverlay').classList.remove('hidden');
+      document.getElementById('btnRunAnalysis').disabled = true;
+      document.getElementById('resultsSection').classList.add('hidden');
+      document.getElementById('btnToggleOverlay').classList.add('hidden');
+      document.getElementById('canvasOverlayHotspots').innerHTML = '';
+      currentImage = null;
+      updateStatusBadge("Silakan upload foto atau pilih salah satu Profil Contoh untuk memulai.", "amber");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
